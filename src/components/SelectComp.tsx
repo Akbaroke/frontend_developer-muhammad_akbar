@@ -13,25 +13,12 @@ type dataType = {
 };
 
 export default function SelectComp({ data, value, onChange }: Props) {
-  const themeSettings = {
-    colors: {
-      brown: [
-        '#ff6800',
-        '#ff6800',
-        '#ff6800',
-        '#ff6800',
-        '#ff6800',
-        '#ff6800',
-        '#ff6800',
-        '#ff6800',
-        '#ff6800',
-        '#ff6800',
-      ],
-    },
-    primaryColor: 'brown',
-  };
+
   return (
-    <MantineProvider theme={themeSettings}>
+    <MantineProvider
+      theme={{
+        primaryColor: 'orange',
+      }}>
       <Select
         className="border w-max rounded-[20px] pl-4 font-medium max-w-[150px]"
         size="md"
