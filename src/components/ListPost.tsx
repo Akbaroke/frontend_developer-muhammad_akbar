@@ -13,6 +13,7 @@ import {
 import cn from '../utils/cn';
 import { useSearchParams } from 'react-router-dom';
 import { Loader } from '@mantine/core';
+import { IoReloadSharp } from 'react-icons/io5';
 
 export default function ListPost() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,12 +27,17 @@ export default function ListPost() {
     searchParams.get('sort') ? searchParams.get('sort') || 'newest' : 'newest'
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const visiblePages = 5;
 
   useEffect(() => {
     setSearchParams({ page: showPerPage.toString(), sort: sortBy });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showPerPage, sortBy]);
+
+  const reloadPage = () => {
+    window.location.reload();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,6 +64,7 @@ export default function ListPost() {
         setDataListPost(combinedData);
       } catch (error) {
         console.error(error);
+        setIsError(true);
       } finally {
         setIsLoading(false);
       }
@@ -107,7 +114,7 @@ export default function ListPost() {
     }
 
     buttons.push(
-      <div className="flex">
+      <div className="flex" key="ledt">
         <button
           key="prevPag"
           className={cn('p-2 rounded-lg cursor-pointer', {
@@ -142,7 +149,7 @@ export default function ListPost() {
     }
 
     buttons.push(
-      <div className="flex">
+      <div className="flex" key="right">
         <button
           key="next"
           className={cn('p-2 rounded-lg cursor-pointer', {
@@ -167,7 +174,13 @@ export default function ListPost() {
 
   return (
     <Container className="w-max flex flex-col gap-8">
-      {isLoading ? (
+      {isError ? (
+        <button
+          className="m-auto w-max h-max rounded-full p-2 border border-primary text-primary shadow-md hover:rotate-180 hover:shadow-none transition-all duration-500"
+          onClick={reloadPage}>
+          <IoReloadSharp />
+        </button>
+      ) : isLoading ? (
         <Loader color="orange" variant="dots" className="m-auto mt-16" />
       ) : (
         <>
