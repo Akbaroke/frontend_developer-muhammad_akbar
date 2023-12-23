@@ -22,7 +22,7 @@ export default function App() {
       <div className="relative z-20">
         <Header />
         <Banner />
-        <div className="bg-white min-h-screen">
+        <div className="bg-white min-h-screen pb-20">
           <ListPost />
         </div>
       </div>

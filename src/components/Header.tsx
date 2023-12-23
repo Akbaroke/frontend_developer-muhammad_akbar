@@ -23,7 +23,7 @@ export default function Header() {
           height={40}
         />
 
-        <ul className="flex gap-5">
+        <ul className="flex gap-6">
           {DataNavLink.map((item, index) => (
             <li key={index}>
               <NavLink {...item} />
