@@ -5,7 +5,10 @@ export type PropsNavLink = {
 
 export default function NavLink({ title, href }: PropsNavLink) {
   return (
-    <a href={href} id="navLink">
+    <a
+      href={href}
+      id="navLink"
+      className={title.toLowerCase() === 'ideas' ? 'active' : ''}>
       {title}
     </a>
   );

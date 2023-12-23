@@ -12,11 +12,10 @@ import {
 } from 'react-icons/md';
 import cn from '../utils/cn';
 import { useSearchParams } from 'react-router-dom';
+import { Loader } from '@mantine/core';
 
 export default function ListPost() {
   const [searchParams, setSearchParams] = useSearchParams();
-  console.log(searchParams);
-
   const [dataListPost, setDataListPost] = useState<PropsContent[] | []>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -26,6 +25,7 @@ export default function ListPost() {
   const [sortBy, setSortBy] = useState(
     searchParams.get('sort') ? searchParams.get('sort') || 'newest' : 'newest'
   );
+  const [isLoading, setIsLoading] = useState(false);
   const visiblePages = 5;
 
   useEffect(() => {
@@ -35,6 +35,7 @@ export default function ListPost() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const fetchPage = async (pageNumber: number) => {
           const response = await axios.get(
@@ -57,6 +58,8 @@ export default function ListPost() {
         setDataListPost(combinedData);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -164,50 +167,56 @@ export default function ListPost() {
 
   return (
     <Container className="w-max flex flex-col gap-8">
-      <div className="flex items-center justify-between">
-        <h1>
-          Showing {indexOfFirstItem + 1} to {indexOfLastItem} of{' '}
-          {dataListPost.length}
-        </h1>
-        <div className="flex gap-5">
-          <div className="flex items-center gap-4">
-            <p>Show per page:</p>
-            <SelectComp
-              data={['10', '20', '50']}
-              onChange={(e) => {
-                setCurrentPage(1);
-                setshowPerPage(Number(e));
-              }}
-              value={showPerPage.toString()}
-            />
+      {isLoading ? (
+        <Loader color="orange" variant="dots" className="m-auto mt-16" />
+      ) : (
+        <>
+          <div className="flex items-center justify-between w-f">
+            <h1>
+              Showing {indexOfFirstItem + 1} to {indexOfLastItem} of{' '}
+              {dataListPost.length}
+            </h1>
+            <div className="flex gap-5">
+              <div className="flex items-center gap-4">
+                <p>Show per page:</p>
+                <SelectComp
+                  data={['10', '20', '50']}
+                  onChange={(e) => {
+                    setCurrentPage(1);
+                    setshowPerPage(Number(e));
+                  }}
+                  value={showPerPage.toString()}
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <p>Sort by:</p>
+                <SelectComp
+                  data={[
+                    {
+                      label: 'Newest',
+                      value: 'newest',
+                    },
+                    {
+                      label: 'Oldest',
+                      value: 'oldest',
+                    },
+                  ]}
+                  onChange={(e) => setSortBy(e)}
+                  value={sortBy}
+                />
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <p>Sort by:</p>
-            <SelectComp
-              data={[
-                {
-                  label: 'Newest',
-                  value: 'newest',
-                },
-                {
-                  label: 'Oldest',
-                  value: 'oldest',
-                },
-              ]}
-              onChange={(e) => setSortBy(e)}
-              value={sortBy}
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-4 md:gap-5 xl:gap-7">
+            {currentItems?.map((item, index) => (
+              <CardContent key={index} {...item} />
+            ))}
           </div>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-4 md:gap-5 xl:gap-7">
-        {currentItems?.map((item, index) => (
-          <CardContent key={index} {...item} />
-        ))}
-      </div>
-      <ul className="flex gap-2 w-max m-auto mt-16">
-        {renderPaginationButtons()}
-      </ul>
+          <ul className="flex gap-2 w-max m-auto mt-16">
+            {renderPaginationButtons()}
+          </ul>
+        </>
+      )}
     </Container>
   );
 }
